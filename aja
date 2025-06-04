@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Accounting Store - Login & Dashboard</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+
+  :root {
+    --primary-color: #2c7a7b;
+    --primary-dark: #234e52;
+    --accent-color: #68d391;
+    --background-color: #f0f6f6;
+    --input-background: #e0f2f1;
+    --input-border: #a0bdbb;
+    --text-color: #234e52;
+    --error-color: #e53e3e;
+    --header-bg: #2c7a7b;
+    --header-text: #ffffff;
+    --border-color: #c0d7d6;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  /* Container shared styles */
+  .container {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(44, 122, 123, 0.3);
+    width: 380px;
+    max-width: 95vw;
+    padding: 2rem 2rem 3rem;
+    text-align: center;
+    transition: box-shadow 0.3s ease;
+  }
+
+  .container:hover {
+    box-shadow: 0 12px 36px rgba(44, 122, 123, 0.45);
+  }
+
+  .logo {
+    font-size: 2.8rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 0.25rem;
+    letter-spacing: 0.1em;
+  }
+
+  .subtitle {
+    color: var(--primary-dark);
+    font-weight: 500;
+    margin-bottom: 2rem;
+    letter-spacing: 0.03em;
+    font-size: 1.05rem;
+  }
+
+  label {
+    display: block;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: 0.25rem;
+    color: var(--primary-dark);
+  }
+
+  input[type="text"],
+  input[type="password"],
+  input[type="email"],
+  input[type="number"] {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    border: 1.5px solid var(--input-border);
+    border-radius: 8px;
+    background-color: var(--input-background);
+    transition: border-color 0.25s ease, box-shadow 0.25s ease;
+    color: var(--primary-dark);
+    font-family: 'Inter', sans-serif;
+    box-sizing: border-box;
+  }
+
+  input[type="text"]:focus,
+  input[type="password"]:focus,
+  input[type="email"]:focus,
+  input[type="number"]:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 8px var(--accent-color);
+    background-color: #ddf4f2;
+  }
+
+  button {
+    margin-top: 1.5rem;
+    padding: 0.85rem 1rem;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.15rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    box-shadow: 0 4px 12px rgba(44, 122, 123, 0.3);
+  }
+
+  button:hover {
+    background: var(--primary-dark);
+    box-shadow: 0 6px 16px rgba(35, 78, 82, 0.5);
+  }
+
+  .toggle-link {
+    margin-top: 1.25rem;
+    font-size: 0.9rem;
+    color: var(--primary-color);
+    cursor: pointer;
+    text-decoration: underline;
+  }
+
+  /* Dashboard styles */
+  #dashboard {
+    width: 90vw;
+    max-width: 1100px;
+    min-height: 90vh;
+    background: white;
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem 2rem;
+    box-shadow: 0 8px 30px rgba(44, 122, 123, 0.3);
+    display: none;
+    flex-direction: column;
+  }
+
+  #dashboard header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 3px solid var(--primary-color);
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  #dashboard header h1 {
+    color: var(--primary-color);
+    margin: 0;
+    font-weight: 800;
+    font-size: 1.7rem;
+    letter-spacing: 0.06em;
+  }
+
+  #dashboard header button#logoutBtn {
+    background: var(--error-color);
+    box-shadow: 0 4px 12px rgba(229, 62, 62, 0.4);
+  }
+
+  #dashboard header button#logoutBtn:hover {
+    background: #9b2c2c;
+    box-shadow: 0 6px 16px rgba(155, 44, 44, 0.7);
+  }
+
+  /* Table styles */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 1rem;
+  }
+
+  thead {
+    background-color: var(--primary-color);
+    color: var(--header-text);
+  }
+
+  th, td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--border-color);
+    text-align: center;
+  }
+
+  th:first-child, td:first-child {
+    text-align: left;
+  }
+
+  tbody tr:hover {
+    background-color: #e6f7f7;
+  }
+
+  input.table-input {
+    width: 80px;
+    font-size: 1rem;
+    padding: 0.2rem 0.3rem;
+    border: 1px solid var(--input-border);
+    border-radius: 6px;
+    text-align: center;
+    background-color: var(--input-background);
+    transition: border-color 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  input.table-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 6px var(--accent-color);
+    background-color: #ddf4f2;
+  }
+
+  tfoot td {
+    font-weight: 700;
+    font-size: 1.1rem;
+    padding-top: 1rem;
+    border-top: 2px solid var(--primary-color);
+  }
+
+  #addItemForm {
+    margin: 1rem 0 2rem;
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  #addItemForm input[type="text"],
+  #addItemForm input[type="number"] {
+    width: 140px;
+  }
+
+  #exportBtn {
+    background-color: var(--accent-color);
+    box-shadow: 0 4px 12px rgba(104, 211, 145, 0.4);
+    margin-top: 0;
+  }
+
+  #exportBtn:hover {
+    background-color: #4caf70;
+    box-shadow: 0 6px 16px rgba(76, 175, 112, 0.7);
+  }
+
+  @media (max-width: 650px) {
+    #dashboard {
+      padding: 1rem 1rem 1.5rem;
+    }
+
+    table, thead, tbody, th, td, tr {
+      display: block;
+    }
+
+    thead tr {
+      display: none;
+    }
+
+    tbody tr {
+      margin-bottom: 1rem;
+      background: #f9f9f9;
+      border-radius: 10px;
+      padding: 1rem;
+      box-shadow: 0 0 10px rgba(44, 122, 123, 0.1);
+    }
+
+    tbody td {
+      text-align: right;
+      padding-left: 50%;
+      position: relative;
+    }
+    tbody td::before {
+      content: attr(data-label);
+      position: absolute;
+      left: 1rem;
+      width: 45%;
+      padding-left: 0.5rem;
+      font-weight: 600;
+      text-align: left;
+      color: var(--primary-dark);
+    }
+
+    input.table-input {
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    #addItemForm {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    #addItemForm input[type="text"],
+    #addItemForm input[type="number"],
+    #addItemForm button {
+      width: 100%;
+    }
+
+    #exportBtn, #logoutBtn {
+      width: 100%;
+      margin-bottom: 1rem;
+    }
+  }
+</style>
+</head>
+<body>
+  <main>
+    <!-- Authentication Container -->
+    <section id="authSection" class="container" aria-label="Authentication Section">
+      <div class="logo" aria-label="Accounting Store Logo">AcctShop</div>
+      <div class="subtitle" id="form-title">Login to Your Accounting Dashboard</div>
+      
+      <form id="auth-form" action="#" method="POST" novalidate>
+        <label for="username">Username or Email</label>
+        <input type="text" id="username" name="username" autocomplete="username" required placeholder="Enter your username or email" />
+        
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" autocomplete="current-password" required placeholder="Enter your password" />
+        
+        <button type="submit" aria-label="Log in to Accounting Store">Log In</button>
+      </form>
+      
+      <p class="toggle-link" id="toggle-form" aria-label="Switch to Registration Form">Don't have an account? Register here</p>
+      
+      <p class="footer-note" aria-live="polite">Secure login for your store accounting system.</p>
+    </section>
+
+    <!-- Dashboard Container -->
+    <section id="dashboard" aria-label="Accounting Dashboard">
+      <header>
+        <h1>Accounting Dashboard</h1>
+        <button id="logoutBtn" aria-label="Logout from Accounting Dashboard">Logout</button>
+      </header>
+
+      <!-- Add Item Form -->
+      <form id="addItemForm" aria-label="Add new item to accounting">
+        <input type="text" id="itemNameInput" placeholder="Item Name" required aria-required="true" />
+        <input type="number" id="itemQuantityInput" min="1" placeholder="Quantity" required aria-required="true" />
+        <input type="number" id="itemPriceInput" min="0" step="0.01" placeholder="Price" required aria-required="true" />
+        <input type="number" id="itemStockInput" min="0" placeholder="Stock" required aria-required="true" />
+        <button type="submit" aria-label="Add Item">Add Item</button>
+      </form>
+
+      <!-- Items Table -->
+      <table aria-describedby="tableDesc" role="grid">
+        <caption id="tableDesc" style="text-align:left; margin-bottom: 0.5rem; font-weight:600; color: var(--primary-dark);">List of Items, Quantity, Price, Stock and Total Price</caption>
+        <thead>
+          <tr>
+            <th scope="col">Item Name</th>
+            <th scope="col">Quantity</th>
+            <th scope="col">Price (Rp)</th>
+            <th scope="col">Stock</th>
+            <th scope="col">Total Price (Rp)</th>
+            <th scope="col" aria-label="Actions">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="itemsTableBody">
+          <!-- Items will appear here -->
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="4" style="text-align:right;">Grand Total:</td>
+            <td colspan="2" id="grandTotalCell">Rp 0.00</td>
+          </tr>
+        </tfoot>
+      </table>
+
+      <button id="exportBtn" aria-label="Export data to Excel">Export to Excel</button>
+    </section>
+  </main>
+
+  <script>
+    (() => {
+      const authSection = document.getElementById('authSection');
+      const dashboard = document.getElementById('dashboard');
+      const formTitle = document.getElementById('form-title');
+      const toggleForm = document.getElementById('toggle-form');
+      const authForm = document.getElementById('auth-form');
+
+      let isLoginMode = true; // toggles between login and register mode
+
+      // Switch between login and register forms
+      toggleForm.addEventListener('click', () => {
+        if (isLoginMode) {
+          formTitle.textContent = "Create Your Account";
+          authForm.innerHTML = `
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" required placeholder="Choose a username" />
+            
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" required placeholder="Enter your email" />
+            
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" required placeholder="Create a password" />
+            
+            <button type="submit" aria-label="Register for Accounting Store">Register</button>`;
+          toggleForm.textContent = "Already have an account? Log in here";
+          isLoginMode = false;
+        } else {
+          formTitle.textContent = "Login to Your Accounting Dashboard";
+          authForm.innerHTML = `
+            <label for="username">Username or Email</label>
+            <input type="text" id="username" name="username" required placeholder="Enter your username or email" />
+            
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" required placeholder="Enter your password" />
+            
+            <button type="submit" aria-label="Log in to Accounting Store">Log In</button>`;
+          toggleForm.textContent = "Don't have an account? Register here";
+          isLoginMode = true;
+        }
+      });
+
+      // Simple in-memory user store (just for simulation)
+      const users = [];
+
+      // Handle auth form submit (login/register)
+      authForm.addEventListener('submit', e => {
+        e.preventDefault();
+        if (isLoginMode) {
+          // Login logic: match username/email and password
+          const usernameInput = authForm.querySelector('#username').value.trim();
+          const passwordInput = authForm.querySelector('#password').value;
+
+          // Very basic user check
+          const user = users.find(u =>
+            (u.username === usernameInput || u.email === usernameInput)
+            && u.password === passwordInput
+          );
+
+          if (user) {
+            showDashboard(user.username);
+          } else {
+            alert('Login failed: Invalid username/email or password.');
+          }
+        } else {
+          // Register logic: Add to users array
+          const usernameInput = authForm.querySelector('#username').value.trim();
+          const emailInput = authForm.querySelector('#email').value.trim();
+          const passwordInput = authForm.querySelector('#password').value;
+
+          // Check if username/email taken
+          const duplicate = users.find(u => u.username === usernameInput || u.email === emailInput);
+          if (duplicate) {
+            alert('Registration failed: Username or email already taken.');
+            return;
+          }
+
+          if (usernameInput === '' || emailInput === '' || passwordInput === '') {
+            alert('Please fill all fields.');
+            return;
+          }
+
+          users.push({
+            username: usernameInput,
+            email: emailInput,
+            password: passwordInput
+          });
+          alert('Registration successful! You can now log in.');
+          toggleForm.click(); // Switch to login form
+        }
+      });
+
+      // Show dashboard after login
+      function showDashboard(username) {
+        authSection.style.display = 'none';
+        dashboard.style.display = 'flex';
+
+        document.querySelector('#dashboard header h1').textContent = `Welcome, ${username}! Accounting Dashboard`;
+      }
+
+      // Logout
+      document.getElementById('logoutBtn').addEventListener('click', () => {
+        dashboard.style.display = 'none';
+        authSection.style.display = 'block';
+        // Clear login form fields and reset form title/toggle
+        if (!isLoginMode) toggleForm.click();
+        authForm.reset();
+        items = [];
+        renderItems();
+      });
+
+      // Accounting data and functionality
+      const addItemForm = document.getElementById('addItemForm');
+      const itemsTableBody = document.getElementById('itemsTableBody');
+      const grandTotalCell = document.getElementById('grandTotalCell');
+      const exportBtn = document.getElementById('exportBtn');
+
+      let items = [];
+
+      // Add item handler
+      addItemForm.addEventListener('submit', e => {
+        e.preventDefault();
+        const name = document.getElementById('itemNameInput').value.trim();
+        const quantity = parseInt(document.getElementById('itemQuantityInput').value, 10);
+        const price = parseFloat(document.getElementById('itemPriceInput').value);
+        const stock = parseInt(document.getElementById('itemStockInput').value, 10);
+
+        if (!name || quantity <= 0 || price < 0 || stock < 0 || isNaN(quantity) || isNaN(price) || isNaN(stock)) {
+          alert('Please enter valid item details.');
+          return;
+        }
+
+        items.push({ name, quantity, price, stock });
+        renderItems();
+
+        addItemForm.reset();
+      });
+
+      // Render items in table
+      function renderItems() {
+        itemsTableBody.innerHTML = '';
+        let grandTotal = 0;
+
+        items.forEach((item, index) => {
+          const totalPrice = item.quantity * item.price;
+          grandTotal += totalPrice;
+
+          const tr = document.createElement('tr');
+          // Item name - editable text input
+          const nameTd = document.createElement('td');
+          const nameInput = document.createElement('input');
+          nameInput.type = 'text';
+          nameInput.className = 'table-input';
+          nameInput.value = item.name;
+          nameInput.setAttribute('aria-label', `Item name for row ${index + 1}`);
+          nameInput.addEventListener('input', e => {
+            item.name = e.target.value;
+          });
+          nameTd.appendChild(nameInput);
+          nameTd.setAttribute('data-label', 'Item Name');
+
+          // Quantity - editable number input
+          const qtyTd = document.createElement('td');
+          const qtyInput = document.createElement('input');
+          qtyInput.type = 'number';
+          qtyInput.min = 1;
+          qtyInput.className = 'table-input';
+          qtyInput.value = item.quantity;
+          qtyInput.setAttribute('aria-label', `Quantity for row ${index + 1}`);
+          qtyInput.addEventListener('input', e => {
+            let val = parseInt(e.target.value, 10);
+            if (isNaN(val) || val < 1) val = 1;
+            item.quantity = val;
+            renderItems();
+          });
+          qtyTd.appendChild(qtyInput);
+          qtyTd.setAttribute('data-label', 'Quantity');
+
+          // Price - editable number input
+          const priceTd = document.createElement('td');
+          const priceInput = document.createElement('input');
+          priceInput.type = 'number';
+          priceInput.min = 0;
+          priceInput.step = '0.01';
+          priceInput.className = 'table-input';
+          priceInput.value = item.price;
+          priceInput.setAttribute('aria-label', `Price for row ${index + 1}`);
+          priceInput.addEventListener('input', e => {
+            let val = parseFloat(e.target.value);
+            if (isNaN(val) || val < 0) val = 0;
+            item.price = val;
+            renderItems();
+          });
+          priceTd.appendChild(priceInput);
+          priceTd.setAttribute('data-label', 'Price');
+
+          // Stock - editable number input
+          const stockTd = document.createElement('td');
+          const stockInput = document.createElement('input');
+          stockInput.type = 'number';
+          stockInput.min = 0;
+          stockInput.className = 'table-input';
+          stockInput.value = item.stock;
+          stockInput.setAttribute('aria-label', `Stock for row ${index + 1}`);
+          stockInput.addEventListener('input', e => {
+            let val = parseInt(e.target.value, 10);
+            if (isNaN(val) || val < 0) val = 0;
+            item.stock = val;
+          });
+          stockTd.appendChild(stockInput);
+          stockTd.setAttribute('data-label', 'Stock');
+
+          // Total price (calculated)
+          const totalTd = document.createElement('td');
+          totalTd.textContent = `Rp ${totalPrice.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+          totalTd.setAttribute('data-label', 'Total Price');
+
+          // Actions - delete button
+          const actionTd = document.createElement('td');
+          const delBtn = document.createElement('button');
+          delBtn.textContent = 'Delete';
+          delBtn.style.backgroundColor = '#e53e3e';
+          delBtn.style.border = 'none';
+          delBtn.style.color = 'white';
+          delBtn.style.padding = '0.3rem 0.6rem';
+          delBtn.style.borderRadius = '6px';
+          delBtn.style.cursor = 'pointer';
+          delBtn.style.fontWeight = '600';
+          delBtn.setAttribute('aria-label', `Delete item row ${index + 1}`);
+          delBtn.addEventListener('click', () => {
+            items.splice(index, 1);
+            renderItems();
+          });
+          actionTd.appendChild(delBtn);
+          actionTd.setAttribute('data-label', 'Actions');
+
+          tr.appendChild(nameTd);
+          tr.appendChild(qtyTd);
+          tr.appendChild(priceTd);
+          tr.appendChild(stockTd);
+          tr.appendChild(totalTd);
+          tr.appendChild(actionTd);
+
+          itemsTableBody.appendChild(tr);
+        });
+
+        grandTotalCell.textContent = `Rp ${grandTotal.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+      }
+
+      // Export data as Excel-compatible CSV
+      function exportToExcel() {
+        if (items.length === 0) {
+          alert('No data to export.');
+          return;
+        }
+        const header = [
+          'Item Name',
+          'Quantity',
+          'Price',
+          'Stock',
+          'Total Price'
+        ];
+
+        const rows = items.map(item => {
+          const totalPrice = item.quantity * item.price;
+          return [
+            `"${item.name}"`,
+            item.quantity,
+            item.price.toFixed(2),
+            item.stock,
+            totalPrice.toFixed(2)
+          ].join(',');
+        });
+
+        const csvContent = [header.join(','), ...rows].join('\r\n');
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', `accounting_store_data_${new Date().toISOString().slice(0,10)}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      }
+      exportBtn.addEventListener('click', exportToExcel);
+    })();
+  </script>
+</body>
+</html>
+
